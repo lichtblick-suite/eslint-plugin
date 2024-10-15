@@ -14,20 +14,31 @@ module.exports = {
           type: "string",
           descritpion: "Type of license that should be displayed on the header."
         }
-      }
+      },
+      additionalProperties: false, 
     }],
     messages: {
       missingLicenseError: "Missing license error",
+      missingTypeOfLicense: "Please add the type of license of the repository on .eslintrc.js",
     },
   },
 
   create: (context) => {
-    console.log("console log", context);
-    const LICENSE_TYPE = context.options[0];
+    const options = context.options[0]; 
+    // Check if licenseType is provided; if not, throw an error 
+    if (!options || !options.licenseType) {
+       context.report({ 
+        loc: { line: 0, column: 0 }, 
+        messageId: "missingTypeOfLicense", 
+      }); 
+      return {};
+    }
+    const LICENSE_TYPE = options.licenseType;
     const LICENSE_HEADER = `
-  // SPDX-FileCopyrightText: Copyright (C) 2023-2024 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)<lichtblick@bmwgroup.com>
+// SPDX-FileCopyrightText: Copyright (C) 2023-2024 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)<lichtblick@bmwgroup.com>
 // SPDX-License-Identifier: ${LICENSE_TYPE}
     `.trim();
+    
     return {
       Program: () => {
         const source = context.getSourceCode().getText();
@@ -44,16 +55,7 @@ module.exports = {
               return { range: [0, 0], text: LICENSE_HEADER + "\n\n" };
             },
           });
-        } else if (LICENSE_TYPE === null) {
-          const startIndex = source.indexOf("SPDX-License-Identifier");
-          const lines = source.substring(0, startIndex).split('\n');
-          const lineNumber = lines.length;
-          context.report({
-            messageId: "missingTypeOfLicense",
-            message: "Please add the type of license of the repository on .eslintrc.js",
-            loc: {start: lineNumber, end: lineNumber}
-          });
-        }; 
+        }
       },
     };
   },

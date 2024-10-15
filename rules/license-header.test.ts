@@ -73,16 +73,22 @@ const invalidLichtblickHeaderCases = [
 ruleTester.run("check-license-header", rule, {
   valid: [
     {
-      code: validLichtblickHeader,
+      code: validLichtblickHeader
+    },
+    {
+      code: validLichtblickHeaderWithSpaces,
       options: [{licenseType: "MPL-2.0"}]
     },
-    validLichtblickHeaderWithSpaces,
-    validLichtblickHeaderWithSpacesWithJsdom,
+    {
+      code: validLichtblickHeaderWithSpacesWithJsdom,
+      options: [{licenseType: "MPL-2.0"}]
+    },
   ],
 
   // Test if the lint fix were successfull, adding the LICENSE_HEADER followed by two empty lines
   invalid: invalidLichtblickHeaderCases.map((invalidHeader) => ({
     code: invalidHeader,
+    options: [{licenseType: "MPL-2.0"}],
     errors: [{ messageId: "missingLicenseError" }],
     output: LICENSE_HEADER + "\n\n" + invalidHeader,
   })),
