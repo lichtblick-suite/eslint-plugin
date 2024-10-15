@@ -8,6 +8,7 @@ module.exports = {
     type: "suggestion",
     fixable: "code",
     schema: [{
+      
       type: "object",
       properties: {
           licenseType: {
