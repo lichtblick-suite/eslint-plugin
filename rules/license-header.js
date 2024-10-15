@@ -7,30 +7,33 @@ module.exports = {
   meta: {
     type: "suggestion",
     fixable: "code",
-    schema: [{
-      
-      type: "object",
-      properties: {
+    schema: [
+      {
+        type: "object",
+        properties: {
           licenseType: {
-          type: "string",
-          descritpion: "Type of license that should be displayed on the header."
-        }
+            type: "string",
+            descritpion:
+              "Type of license that should be displayed on the header.",
+          },
+        },
+        additionalProperties: false,
       },
-      additionalProperties: false, 
-    }],
+    ],
     messages: {
       missingLicenseError: "Missing license error",
-      missingTypeOfLicense: "Please add the type of license of the repository on .eslintrc.js",
+      missingTypeOfLicense:
+        "Please add the type of license of the repository on .eslintrc.js",
     },
   },
 
   create: (context) => {
-    const options = context.options[0];  
+    const options = context.options[0];
     if (!options || !options.licenseType) {
-       context.report({ 
-        loc: { line: 0, column: 0 }, 
-        messageId: "missingTypeOfLicense", 
-      }); 
+      context.report({
+        loc: { line: 0, column: 0 },
+        messageId: "missingTypeOfLicense",
+      });
       return {};
     }
     const LICENSE_TYPE = options.licenseType;
@@ -38,7 +41,7 @@ module.exports = {
 // SPDX-FileCopyrightText: Copyright (C) 2023-2024 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)<lichtblick@bmwgroup.com>
 // SPDX-License-Identifier: ${LICENSE_TYPE}
     `.trim();
-    
+
     return {
       Program: () => {
         const source = context.getSourceCode().getText();

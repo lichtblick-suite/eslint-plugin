@@ -15,9 +15,9 @@ const LICENSE_HEADER = `
 const rule =
   // eslint-disable-next-line @typescript-eslint/no-var-requires
   require("./license-header") as TSESLint.RuleModule<
-  "missingLicenseError" | "missingTypeOfLicense",
-   Array<Record< string, string >>
-   >;
+    "missingLicenseError" | "missingTypeOfLicense",
+    Array<Record<string, string>>
+  >;
 
 const ruleTester = new RuleTester({
   parser: "@typescript-eslint/parser",
@@ -78,15 +78,15 @@ ruleTester.run("check-license-header", rule, {
   valid: [
     {
       code: validLichtblickHeader,
-      options: [{ licenseType: "MPL-2.0" }]
+      options: [{ licenseType: "MPL-2.0" }],
     },
     {
       code: validLichtblickHeaderWithSpaces,
-      options: [{ licenseType: "MPL-2.0" }]
+      options: [{ licenseType: "MPL-2.0" }],
     },
     {
       code: validLichtblickHeaderWithSpacesWithJsdom,
-      options: [{ licenseType: "MPL-2.0" }]
+      options: [{ licenseType: "MPL-2.0" }],
     },
   ],
 
@@ -96,26 +96,24 @@ ruleTester.run("check-license-header", rule, {
       code: invalidLichtblickHeaderEmpty,
       options: [{ licenseType: "MPL-2.0" }],
       errors: [{ messageId: "missingLicenseError" }],
-      output: LICENSE_HEADER + "\n\n" + invalidLichtblickHeaderEmpty
+      output: LICENSE_HEADER + "\n\n" + invalidLichtblickHeaderEmpty,
     },
     {
       code: invalidLichtblickHeaderOlder,
       options: [{ licenseType: "MPL-2.0" }],
       errors: [{ messageId: "missingLicenseError" }],
-      output: LICENSE_HEADER + "\n\n" + invalidLichtblickHeaderOlder
+      output: LICENSE_HEADER + "\n\n" + invalidLichtblickHeaderOlder,
     },
     {
       code: invalidLichtblickHeaderRandom,
       options: [{ licenseType: "MPL-2.0" }],
       errors: [{ messageId: "missingLicenseError" }],
-      output: LICENSE_HEADER + "\n\n" + invalidLichtblickHeaderRandom
+      output: LICENSE_HEADER + "\n\n" + invalidLichtblickHeaderRandom,
     },
     {
       code: invalidLichtblickHeaderWithMissingTypeOfLicense,
       options: [],
-      errors: [
-        { messageId: "missingTypeOfLicense" },
-      ]
-    }
-  ]
+      errors: [{ messageId: "missingTypeOfLicense" }],
+    },
+  ],
 });

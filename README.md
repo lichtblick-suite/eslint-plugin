@@ -73,4 +73,3 @@ You can add `"plugin:@lichtblick/typescript"` to the top level `extends` instead
 tag=$(npm version minor) && echo "$tag"
 git push && git push origin "$tag"
 ```
-
