@@ -73,7 +73,8 @@ const invalidLichtblickHeaderCases = [
 ruleTester.run("check-license-header", rule, {
   valid: [
     {
-      code: validLichtblickHeader
+      code: validLichtblickHeader,
+      options: [{licenseType: "MPL-2.0"}]
     },
     {
       code: validLichtblickHeaderWithSpaces,

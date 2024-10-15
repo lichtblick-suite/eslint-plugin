@@ -24,8 +24,7 @@ module.exports = {
   },
 
   create: (context) => {
-    const options = context.options[0]; 
-    // Check if licenseType is provided; if not, throw an error 
+    const options = context.options[0];  
     if (!options || !options.licenseType) {
        context.report({ 
         loc: { line: 0, column: 0 }, 
