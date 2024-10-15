@@ -5,14 +5,15 @@ import { RuleTester } from "@typescript-eslint/rule-tester";
 import { TSESLint } from "@typescript-eslint/utils";
 
 // should be the same of LICENSE_HEADER defined on license-header.js file.
+const LICENSE_TYPE = "MPL-2.0";
 const LICENSE_HEADER = `
 // SPDX-FileCopyrightText: Copyright (C) 2023-2024 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)<lichtblick@bmwgroup.com>
-// SPDX-License-Identifier: MPL-2.0
+// SPDX-License-Identifier: ${LICENSE_TYPE}
 `.trim();
 
 const rule =
   // eslint-disable-next-line @typescript-eslint/no-var-requires
-  require("./license-header") as TSESLint.RuleModule<"missingLicenseError">;
+  require("./license-header") as TSESLint.RuleModule<"missingLicenseError", Array<Record< string, string >>>;
 
 const ruleTester = new RuleTester({
   parser: "@typescript-eslint/parser",
@@ -71,7 +72,10 @@ const invalidLichtblickHeaderCases = [
 
 ruleTester.run("check-license-header", rule, {
   valid: [
-    validLichtblickHeader,
+    {
+      code: validLichtblickHeader,
+      options: [{licenseType: "MPL-2.0"}]
+    },
     validLichtblickHeaderWithSpaces,
     validLichtblickHeaderWithSpacesWithJsdom,
   ],
