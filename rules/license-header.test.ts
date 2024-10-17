@@ -19,9 +19,7 @@ function createHeader(license: string) {
 const rule =
   // eslint-disable-next-line @typescript-eslint/no-var-requires
   require("./license-header") as TSESLint.RuleModule<
-    | "wrongHeaderError"
-    | "missingTypeOfLicenseError"
-    | "wrongTypeOfLicenseError",
+    "wrongHeaderError" | "missingTypeOfLicenseError",
     Array<Record<string, string>>
   >;
 
@@ -125,11 +123,11 @@ ruleTester.run("check-license-header", rule, {
     {
       code: invalidLichtblickHeaderWithWrongTypeOfLicense,
       options: [{ licenseType: "MIT" }],
-      errors: [{ messageId: "wrongTypeOfLicenseError" }],
-      // output:
-      //   createHeader(mitLicense) +
-      //   "\n\n" +
-      //   invalidLichtblickHeaderWithWrongTypeOfLicense,
+      errors: [{ messageId: "wrongHeaderError" }],
+      output:
+        createHeader(mitLicense) +
+        "\n\n" +
+        invalidLichtblickHeaderWithWrongTypeOfLicense,
     },
   ],
 });
