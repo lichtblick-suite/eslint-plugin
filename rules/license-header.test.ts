@@ -5,17 +5,23 @@ import { RuleTester } from "@typescript-eslint/rule-tester";
 import { TSESLint } from "@typescript-eslint/utils";
 
 // should be the same of LICENSE_HEADER defined on license-header.js file.
-const LICENSE_TYPE = "MPL-2.0";
+const mplLicense = "MPL-2.0";
+const mitLicense = "MIT";
 const noLicense = "";
-const LICENSE_HEADER = `
+
+function createHeader(license: string) {
+  return `
 // SPDX-FileCopyrightText: Copyright (C) 2023-2024 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)<lichtblick@bmwgroup.com>
-// SPDX-License-Identifier: ${LICENSE_TYPE}
+// SPDX-License-Identifier: ${license}
 `.trim();
+}
 
 const rule =
   // eslint-disable-next-line @typescript-eslint/no-var-requires
   require("./license-header") as TSESLint.RuleModule<
-    "missingLicenseError" | "missingTypeOfLicense",
+    | "wrongHeaderError"
+    | "missingTypeOfLicenseError"
+    | "wrongTypeOfLicenseError",
     Array<Record<string, string>>
   >;
 
@@ -28,8 +34,7 @@ const ruleTester = new RuleTester({
 });
 
 const validLichtblickHeader = `
-// SPDX-FileCopyrightText: Copyright (C) 2023-2024 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)<lichtblick@bmwgroup.com>
-// SPDX-License-Identifier: ${LICENSE_TYPE}
+${createHeader(mitLicense)}
 
 // Rest of file
 `;
@@ -38,8 +43,7 @@ const validLichtblickHeaderWithSpaces = `
 
 
 
-// SPDX-FileCopyrightText: Copyright (C) 2023-2024 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)<lichtblick@bmwgroup.com>
-// SPDX-License-Identifier: ${LICENSE_TYPE}
+${createHeader(mplLicense)}
 
 
 
@@ -48,8 +52,7 @@ const validLichtblickHeaderWithSpaces = `
 const validLichtblickHeaderWithSpacesWithJsdom = `
 /** @jest-environment jsdom */
 
-// SPDX-FileCopyrightText: Copyright (C) 2023-2024 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)<lichtblick@bmwgroup.com>
-// SPDX-License-Identifier: ${LICENSE_TYPE}
+${createHeader(mplLicense)}
 `;
 
 const invalidLichtblickHeaderEmpty = `
@@ -69,8 +72,12 @@ console.log(1 + 2)
 `;
 
 const invalidLichtblickHeaderWithMissingTypeOfLicense = `
-// SPDX-FileCopyrightText: Copyright (C) 2023-2024 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)<lichtblick@bmwgroup.com>
-// SPDX-License-Identifier: ${noLicense}
+${createHeader(noLicense)}
+
+`;
+
+const invalidLichtblickHeaderWithWrongTypeOfLicense = `
+${createHeader(mplLicense)}
 
 `;
 
@@ -78,7 +85,7 @@ ruleTester.run("check-license-header", rule, {
   valid: [
     {
       code: validLichtblickHeader,
-      options: [{ licenseType: "MPL-2.0" }],
+      options: [{ licenseType: "MIT" }],
     },
     {
       code: validLichtblickHeaderWithSpaces,
@@ -95,25 +102,34 @@ ruleTester.run("check-license-header", rule, {
     {
       code: invalidLichtblickHeaderEmpty,
       options: [{ licenseType: "MPL-2.0" }],
-      errors: [{ messageId: "missingLicenseError" }],
-      output: LICENSE_HEADER + "\n\n" + invalidLichtblickHeaderEmpty,
+      errors: [{ messageId: "wrongHeaderError" }],
+      output: createHeader(mplLicense) + "\n\n" + invalidLichtblickHeaderEmpty,
     },
     {
       code: invalidLichtblickHeaderOlder,
       options: [{ licenseType: "MPL-2.0" }],
-      errors: [{ messageId: "missingLicenseError" }],
-      output: LICENSE_HEADER + "\n\n" + invalidLichtblickHeaderOlder,
+      errors: [{ messageId: "wrongHeaderError" }],
+      output: createHeader(mplLicense) + "\n\n" + invalidLichtblickHeaderOlder,
     },
     {
       code: invalidLichtblickHeaderRandom,
       options: [{ licenseType: "MPL-2.0" }],
-      errors: [{ messageId: "missingLicenseError" }],
-      output: LICENSE_HEADER + "\n\n" + invalidLichtblickHeaderRandom,
+      errors: [{ messageId: "wrongHeaderError" }],
+      output: createHeader(mplLicense) + "\n\n" + invalidLichtblickHeaderRandom,
     },
     {
       code: invalidLichtblickHeaderWithMissingTypeOfLicense,
       options: [],
-      errors: [{ messageId: "missingTypeOfLicense" }],
+      errors: [{ messageId: "missingTypeOfLicenseError" }],
+    },
+    {
+      code: invalidLichtblickHeaderWithWrongTypeOfLicense,
+      options: [{ licenseType: "MIT" }],
+      errors: [{ messageId: "wrongTypeOfLicenseError" }],
+      // output:
+      //   createHeader(mitLicense) +
+      //   "\n\n" +
+      //   invalidLichtblickHeaderWithWrongTypeOfLicense,
     },
   ],
 });

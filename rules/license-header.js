@@ -21,9 +21,12 @@ module.exports = {
       },
     ],
     messages: {
-      missingLicenseError: "Missing license error",
-      missingTypeOfLicense:
-        "Please add the type of license of the repository on .eslintrc.js",
+      wrongHeaderError:
+        "There is an error with the file header. Please check if the header exists or if there is a mistake in it.",
+      missingTypeOfLicenseError:
+        "Please specify the type of license in the .eslintrc.yaml configuration.",
+      wrongTypeOfLicenseError:
+        "There is a mismatch between the license type specified in .eslintrc.yaml and the license in the file header.",
     },
   },
 
@@ -32,7 +35,7 @@ module.exports = {
     if (!options || !options.licenseType) {
       context.report({
         loc: { line: 0, column: 0 },
-        messageId: "missingTypeOfLicense",
+        messageId: "missingTypeOfLicenseError",
       });
       return {};
     }
@@ -50,12 +53,37 @@ module.exports = {
         const prefixLinesAreValid = prefixLines.every(
           (line) => line === "" || ALLOWED_PREFIX_LINES.includes(line)
         );
+        const licenseLine = "SPDX-License-Identifier:";
+        const startIndex = source.indexOf(licenseLine);
+        let licenseOnHeader;
+        let licenseIdentifierIndex;
+        let endIndex;
+        if (startIndex !== -1) {
+          licenseIdentifierIndex = startIndex + licenseLine.length;
+          endIndex = source.indexOf("\n", licenseIdentifierIndex);
+          licenseOnHeader = source
+            .substring(licenseIdentifierIndex, endIndex)
+            .trim();
+        }
         if (headerIndex === -1 || !prefixLinesAreValid) {
           context.report({
-            messageId: "missingLicenseError",
+            messageId: "wrongHeaderError",
             loc: { start: 0, end: +source.indexOf("\n") + 1 },
             fix: () => {
               return { range: [0, 0], text: LICENSE_HEADER + "\n\n" };
+            },
+          });
+        } else if (licenseOnHeader !== LICENSE_TYPE) {
+          console.log("licenseIdentifierIndex", licenseIdentifierIndex);
+          console.log("endIndex", endIndex);
+          context.report({
+            messageId: "wrongTypeOfLicenseError",
+            loc: { start: licenseIdentifierIndex, end: endIndex },
+            fix: (fixer) => {
+              return fixer.replaceTextRange(
+                [licenseIdentifierIndex, endIndex],
+                ` ${LICENSE_TYPE}`
+              );
             },
           });
         }
