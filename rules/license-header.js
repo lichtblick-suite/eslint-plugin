@@ -24,7 +24,7 @@ module.exports = {
       wrongHeaderError:
         "There is an error with the file header. Please check if the header exists or if there is a mistake in it.",
       missingTypeOfLicenseError:
-        "Please specify the type of license in the .eslintrc.yaml configuration.",
+        "Please specify the license type in the .eslintrc configuration. For more information, refer to our documentation: https://github.com/Lichtblick-Suite/eslint-plugin?tab=readme-ov-file#lichtblickeslint-plugin",
     },
   },
 
