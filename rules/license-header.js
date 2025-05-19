@@ -38,25 +38,39 @@ module.exports = {
       return {};
     }
     const licenseType = options.licenseType;
-    const LICENSE_HEADER = `
-// SPDX-FileCopyrightText: Copyright (C) 2023-2024 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)<lichtblick@bmwgroup.com>
-// SPDX-License-Identifier: ${licenseType}
-    `.trim();
+    const currentYear = new Date().getFullYear().toString();
+
+    const EXPECTED_HEADER = `// SPDX-FileCopyrightText: Copyright (C) 2023-${currentYear} Bayerische Motoren Werke Aktiengesellschaft (BMW AG)<lichtblick@bmwgroup.com>\n// SPDX-License-Identifier: ${licenseType}`;
+
+    const HEADER_REGEX = /\/\/ SPDX-FileCopyrightText: Copyright \(C\) 2023-\d{4} Bayerische Motoren Werke Aktiengesellschaft \(BMW AG\)<lichtblick@bmwgroup\.com>\n\/\/ SPDX-License-Identifier: (.+)/;
 
     return {
-      Program: () => {
-        const source = context.getSourceCode().getText();
-        const headerIndex = source.indexOf(LICENSE_HEADER);
-        const prefixLines = source.substring(0, headerIndex).trim().split("\n");
-        const prefixLinesAreValid = prefixLines.every(
-          (line) => line === "" || ALLOWED_PREFIX_LINES.includes(line)
-        );
-        if (headerIndex === -1 || !prefixLinesAreValid) {
+      Program: (node) => {
+        const sourceCode = context.getSourceCode();
+        const fullText = sourceCode.getText();
+
+        const match = fullText.match(HEADER_REGEX);
+
+        const headerStartIndex = match?.index ?? -1;
+        const headerEndIndex = match ? headerStartIndex + match[0].length : -1;
+
+        const preHeaderText = headerStartIndex > -1 ? fullText.slice(0, headerStartIndex).trim() : fullText.trim();
+        const prefixLines = preHeaderText.split("\n").filter(Boolean);
+        const prefixLinesAreValid = prefixLines.every(line => ALLOWED_PREFIX_LINES.includes(line.trim()));
+
+        const isHeaderCorrect = match && match[1] === licenseType && match[0].includes(currentYear.toString());
+
+        if (!isHeaderCorrect || !prefixLinesAreValid) {
           context.report({
+            node,
             messageId: "wrongHeaderError",
-            loc: { start: 0, end: +source.indexOf("\n") + 1 },
-            fix: () => {
-              return { range: [0, 0], text: LICENSE_HEADER + "\n\n" };
+            fix: (fixer) => {
+              const replacement = EXPECTED_HEADER + "\n\n";
+              if (headerStartIndex > -1) {
+                return fixer.replaceTextRange([headerStartIndex, headerEndIndex], EXPECTED_HEADER);
+              } else {
+                return fixer.insertTextBeforeRange([0, 0], replacement);
+              }
             },
           });
         }

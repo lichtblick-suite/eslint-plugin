@@ -8,10 +8,11 @@ import { TSESLint } from "@typescript-eslint/utils";
 const mplLicense = "MPL-2.0";
 const mitLicense = "MIT";
 const noLicense = "";
+const currentYear = new Date().getFullYear().toString();
 
-function createHeader(license: string) {
+function createHeader(license: string, year?: string) {
   return `
-// SPDX-FileCopyrightText: Copyright (C) 2023-2024 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)<lichtblick@bmwgroup.com>
+// SPDX-FileCopyrightText: Copyright (C) 2023-${year} Bayerische Motoren Werke Aktiengesellschaft (BMW AG)<lichtblick@bmwgroup.com>
 // SPDX-License-Identifier: ${license}
 `.trim();
 }
@@ -32,7 +33,7 @@ const ruleTester = new RuleTester({
 });
 
 const validLichtblickHeader = `
-${createHeader(mitLicense)}
+${createHeader(mitLicense, currentYear)}
 
 // Rest of file
 `;
@@ -41,7 +42,7 @@ const validLichtblickHeaderWithSpaces = `
 
 
 
-${createHeader(mplLicense)}
+${createHeader(mplLicense, currentYear)}
 
 
 
@@ -50,7 +51,7 @@ ${createHeader(mplLicense)}
 const validLichtblickHeaderWithSpacesWithJsdom = `
 /** @jest-environment jsdom */
 
-${createHeader(mplLicense)}
+${createHeader(mplLicense, currentYear)}
 `;
 
 const invalidLichtblickHeaderEmpty = `
@@ -70,14 +71,13 @@ console.log(1 + 2)
 `;
 
 const invalidLichtblickHeaderWithMissingTypeOfLicense = `
-${createHeader(noLicense)}
+${createHeader(noLicense, currentYear)}
 
 `;
 
-const invalidLichtblickHeaderWithWrongTypeOfLicense = `
-${createHeader(mplLicense)}
+const invalidLichtblickHeaderWithWrongTypeOfLicense = `${createHeader(mplLicense, currentYear)}`+ "\n\n";
 
-`;
+const invalidLichtblickHeaderWrongYear = `${createHeader(mplLicense, "2024")}` + "\n\n"
 
 ruleTester.run("check-license-header", rule, {
   valid: [
@@ -101,19 +101,19 @@ ruleTester.run("check-license-header", rule, {
       code: invalidLichtblickHeaderEmpty,
       options: [{ licenseType: "MPL-2.0" }],
       errors: [{ messageId: "wrongHeaderError" }],
-      output: createHeader(mplLicense) + "\n\n" + invalidLichtblickHeaderEmpty,
+      output: createHeader(mplLicense, currentYear) + "\n\n" + invalidLichtblickHeaderEmpty,
     },
     {
       code: invalidLichtblickHeaderOlder,
       options: [{ licenseType: "MPL-2.0" }],
       errors: [{ messageId: "wrongHeaderError" }],
-      output: createHeader(mplLicense) + "\n\n" + invalidLichtblickHeaderOlder,
+      output: createHeader(mplLicense, currentYear) + "\n\n" + invalidLichtblickHeaderOlder,
     },
     {
       code: invalidLichtblickHeaderRandom,
       options: [{ licenseType: "MPL-2.0" }],
       errors: [{ messageId: "wrongHeaderError" }],
-      output: createHeader(mplLicense) + "\n\n" + invalidLichtblickHeaderRandom,
+      output: createHeader(mplLicense, currentYear) + "\n\n" + invalidLichtblickHeaderRandom,
     },
     {
       code: invalidLichtblickHeaderWithMissingTypeOfLicense,
@@ -125,9 +125,14 @@ ruleTester.run("check-license-header", rule, {
       options: [{ licenseType: "MIT" }],
       errors: [{ messageId: "wrongHeaderError" }],
       output:
-        createHeader(mitLicense) +
-        "\n\n" +
-        invalidLichtblickHeaderWithWrongTypeOfLicense,
+        createHeader(mitLicense, currentYear)+ "\n\n",
     },
+    {
+      code: invalidLichtblickHeaderWrongYear,
+      options: [{ licenseType: "MPL-2.0" }],
+      errors: [{ messageId: "wrongHeaderError" }],
+      output:
+        createHeader(mplLicense, currentYear)+ "\n\n",
+    }
   ],
 });
