@@ -42,7 +42,8 @@ module.exports = {
 
     const EXPECTED_HEADER = `// SPDX-FileCopyrightText: Copyright (C) 2023-${currentYear} Bayerische Motoren Werke Aktiengesellschaft (BMW AG)<lichtblick@bmwgroup.com>\n// SPDX-License-Identifier: ${licenseType}`;
 
-    const HEADER_REGEX = /\/\/ SPDX-FileCopyrightText: Copyright \(C\) 2023-\d{4} Bayerische Motoren Werke Aktiengesellschaft \(BMW AG\)<lichtblick@bmwgroup\.com>\n\/\/ SPDX-License-Identifier: (.+)/;
+    const HEADER_REGEX =
+      /\/\/ SPDX-FileCopyrightText: Copyright \(C\) 2023-\d{4} Bayerische Motoren Werke Aktiengesellschaft \(BMW AG\)<lichtblick@bmwgroup\.com>\n\/\/ SPDX-License-Identifier: (.+)/;
 
     return {
       Program: (node) => {
@@ -54,11 +55,19 @@ module.exports = {
         const headerStartIndex = match?.index ?? -1;
         const headerEndIndex = match ? headerStartIndex + match[0].length : -1;
 
-        const preHeaderText = headerStartIndex > -1 ? fullText.slice(0, headerStartIndex).trim() : fullText.trim();
+        const preHeaderText =
+          headerStartIndex > -1
+            ? fullText.slice(0, headerStartIndex).trim()
+            : fullText.trim();
         const prefixLines = preHeaderText.split("\n").filter(Boolean);
-        const prefixLinesAreValid = prefixLines.every(line => ALLOWED_PREFIX_LINES.includes(line.trim()));
+        const prefixLinesAreValid = prefixLines.every((line) =>
+          ALLOWED_PREFIX_LINES.includes(line.trim())
+        );
 
-        const isHeaderCorrect = match && match[1] === licenseType && match[0].includes(currentYear.toString());
+        const isHeaderCorrect =
+          match &&
+          match[1] === licenseType &&
+          match[0].includes(currentYear.toString());
 
         if (!isHeaderCorrect || !prefixLinesAreValid) {
           context.report({
@@ -67,7 +76,10 @@ module.exports = {
             fix: (fixer) => {
               const replacement = EXPECTED_HEADER + "\n\n";
               if (headerStartIndex > -1) {
-                return fixer.replaceTextRange([headerStartIndex, headerEndIndex], EXPECTED_HEADER);
+                return fixer.replaceTextRange(
+                  [headerStartIndex, headerEndIndex],
+                  EXPECTED_HEADER
+                );
               } else {
                 return fixer.insertTextBeforeRange([0, 0], replacement);
               }

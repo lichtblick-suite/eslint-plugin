@@ -75,9 +75,11 @@ ${createHeader(noLicense, currentYear)}
 
 `;
 
-const invalidLichtblickHeaderWithWrongTypeOfLicense = `${createHeader(mplLicense, currentYear)}`+ "\n\n";
+const invalidLichtblickHeaderWithWrongTypeOfLicense =
+  `${createHeader(mplLicense, currentYear)}` + "\n\n";
 
-const invalidLichtblickHeaderWrongYear = `${createHeader(mplLicense, "2024")}` + "\n\n"
+const invalidLichtblickHeaderWrongYear =
+  `${createHeader(mplLicense, "2024")}` + "\n\n";
 
 ruleTester.run("check-license-header", rule, {
   valid: [
@@ -101,19 +103,28 @@ ruleTester.run("check-license-header", rule, {
       code: invalidLichtblickHeaderEmpty,
       options: [{ licenseType: "MPL-2.0" }],
       errors: [{ messageId: "wrongHeaderError" }],
-      output: createHeader(mplLicense, currentYear) + "\n\n" + invalidLichtblickHeaderEmpty,
+      output:
+        createHeader(mplLicense, currentYear) +
+        "\n\n" +
+        invalidLichtblickHeaderEmpty,
     },
     {
       code: invalidLichtblickHeaderOlder,
       options: [{ licenseType: "MPL-2.0" }],
       errors: [{ messageId: "wrongHeaderError" }],
-      output: createHeader(mplLicense, currentYear) + "\n\n" + invalidLichtblickHeaderOlder,
+      output:
+        createHeader(mplLicense, currentYear) +
+        "\n\n" +
+        invalidLichtblickHeaderOlder,
     },
     {
       code: invalidLichtblickHeaderRandom,
       options: [{ licenseType: "MPL-2.0" }],
       errors: [{ messageId: "wrongHeaderError" }],
-      output: createHeader(mplLicense, currentYear) + "\n\n" + invalidLichtblickHeaderRandom,
+      output:
+        createHeader(mplLicense, currentYear) +
+        "\n\n" +
+        invalidLichtblickHeaderRandom,
     },
     {
       code: invalidLichtblickHeaderWithMissingTypeOfLicense,
@@ -124,15 +135,13 @@ ruleTester.run("check-license-header", rule, {
       code: invalidLichtblickHeaderWithWrongTypeOfLicense,
       options: [{ licenseType: "MIT" }],
       errors: [{ messageId: "wrongHeaderError" }],
-      output:
-        createHeader(mitLicense, currentYear)+ "\n\n",
+      output: createHeader(mitLicense, currentYear) + "\n\n",
     },
     {
       code: invalidLichtblickHeaderWrongYear,
       options: [{ licenseType: "MPL-2.0" }],
       errors: [{ messageId: "wrongHeaderError" }],
-      output:
-        createHeader(mplLicense, currentYear)+ "\n\n",
-    }
+      output: createHeader(mplLicense, currentYear) + "\n\n",
+    },
   ],
 });
