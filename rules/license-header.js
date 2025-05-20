@@ -25,6 +25,8 @@ module.exports = {
         "There is an error with the file header. Please check if the header exists or if there is a mistake in it.",
       missingTypeOfLicenseError:
         "Please specify the license type in the .eslintrc configuration. For more information, refer to our documentation: https://github.com/Lichtblick-Suite/eslint-plugin?tab=readme-ov-file#lichtblickeslint-plugin",
+      prefixLinesError:
+        "There are lines before the header that are not allowed. Please move them below the header.",
     },
   },
 
@@ -69,20 +71,28 @@ module.exports = {
           match[1] === licenseType &&
           match[0].includes(currentYear.toString());
 
-        if (!isHeaderCorrect || !prefixLinesAreValid) {
+        if (!prefixLinesAreValid) {
+          context.report({
+            node,
+            messageId: "prefixLinesError",
+            fix: (fixer) => {
+              return fixer.insertTextBeforeRange(
+                [0, 0],
+                EXPECTED_HEADER + "\n\n"
+              );
+            },
+          });
+          return;
+        }
+        if (!isHeaderCorrect) {
           context.report({
             node,
             messageId: "wrongHeaderError",
             fix: (fixer) => {
-              const replacement = EXPECTED_HEADER + "\n\n";
-              if (headerStartIndex > -1) {
-                return fixer.replaceTextRange(
-                  [headerStartIndex, headerEndIndex],
-                  EXPECTED_HEADER
-                );
-              } else {
-                return fixer.insertTextBeforeRange([0, 0], replacement);
-              }
+              return fixer.replaceTextRange(
+                [headerStartIndex, headerEndIndex],
+                EXPECTED_HEADER
+              );
             },
           });
         }

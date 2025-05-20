@@ -20,7 +20,7 @@ function createHeader(license: string, year?: string) {
 const rule =
   // eslint-disable-next-line @typescript-eslint/no-var-requires
   require("./license-header") as TSESLint.RuleModule<
-    "wrongHeaderError" | "missingTypeOfLicenseError",
+    "wrongHeaderError" | "missingTypeOfLicenseError" | "prefixLinesError",
     Array<Record<string, string>>
   >;
 
@@ -54,9 +54,7 @@ const validLichtblickHeaderWithSpacesWithJsdom = `
 ${createHeader(mplLicense, currentYear)}
 `;
 
-const invalidLichtblickHeaderEmpty = `
-
-`;
+const invalidLichtblickHeaderEmpty = ``;
 
 const invalidLichtblickHeaderOlder = `
 // This Source Code Form is subject to the terms of the Mozilla Public
@@ -104,14 +102,12 @@ ruleTester.run("check-license-header", rule, {
       options: [{ licenseType: "MPL-2.0" }],
       errors: [{ messageId: "wrongHeaderError" }],
       output:
-        createHeader(mplLicense, currentYear) +
-        "\n\n" +
-        invalidLichtblickHeaderEmpty,
+        createHeader(mplLicense, currentYear) + invalidLichtblickHeaderEmpty,
     },
     {
       code: invalidLichtblickHeaderOlder,
       options: [{ licenseType: "MPL-2.0" }],
-      errors: [{ messageId: "wrongHeaderError" }],
+      errors: [{ messageId: "prefixLinesError" }],
       output:
         createHeader(mplLicense, currentYear) +
         "\n\n" +
@@ -120,7 +116,7 @@ ruleTester.run("check-license-header", rule, {
     {
       code: invalidLichtblickHeaderRandom,
       options: [{ licenseType: "MPL-2.0" }],
-      errors: [{ messageId: "wrongHeaderError" }],
+      errors: [{ messageId: "prefixLinesError" }],
       output:
         createHeader(mplLicense, currentYear) +
         "\n\n" +
