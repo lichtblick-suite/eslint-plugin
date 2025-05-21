@@ -11,10 +11,10 @@ const noLicense = "";
 const currentYear = new Date().getFullYear().toString();
 
 function createHeader(license: string, year?: string) {
-  return `
-// SPDX-FileCopyrightText: Copyright (C) 2023-${year} Bayerische Motoren Werke Aktiengesellschaft (BMW AG)<lichtblick@bmwgroup.com>
-// SPDX-License-Identifier: ${license}
-`.trim();
+  return (
+    `// SPDX-FileCopyrightText: Copyright (C) 2023-${year} Bayerische Motoren Werke Aktiengesellschaft (BMW AG)<lichtblick@bmwgroup.com>\n` +
+    `// SPDX-License-Identifier: ${license}`
+  ).trimEnd();
 }
 
 const rule =
@@ -79,6 +79,11 @@ const invalidLichtblickHeaderWithWrongTypeOfLicense =
 const invalidLichtblickHeaderWrongYear =
   `${createHeader(mplLicense, "2024")}` + "\n\n";
 
+const importCode = "import React from 'react';\n";
+
+const invalidLichtblickHeaderDuplicated =
+  `${importCode}` + `${createHeader(mplLicense, currentYear)}` + "\n\n";
+
 ruleTester.run("check-license-header", rule, {
   valid: [
     {
@@ -138,6 +143,16 @@ ruleTester.run("check-license-header", rule, {
       options: [{ licenseType: "MPL-2.0" }],
       errors: [{ messageId: "wrongHeaderError" }],
       output: createHeader(mplLicense, currentYear) + "\n\n",
+    },
+    {
+      code: invalidLichtblickHeaderDuplicated,
+      options: [{ licenseType: "MPL-2.0" }],
+      errors: [{ messageId: "prefixLinesError" }],
+      output:
+        createHeader(mplLicense, currentYear) +
+        "\n\n" +
+        `${importCode}` +
+        "\n\n",
     },
   ],
 });

@@ -76,13 +76,16 @@ module.exports = {
             node,
             messageId: "prefixLinesError",
             fix: (fixer) => {
+              const fixes = [];
               if (match) {
-                fixer.removeRange([headerStartIndex, headerEndIndex]);
+                fixes.push(
+                  fixer.removeRange([headerStartIndex, headerEndIndex])
+                );
               }
-              return fixer.insertTextBeforeRange(
-                [0, 0],
-                EXPECTED_HEADER + "\n\n"
+              fixes.push(
+                fixer.insertTextBeforeRange([0, 0], EXPECTED_HEADER + "\n\n")
               );
+              return fixes;
             },
           });
           return;
