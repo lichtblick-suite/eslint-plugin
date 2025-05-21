@@ -76,6 +76,9 @@ module.exports = {
             node,
             messageId: "prefixLinesError",
             fix: (fixer) => {
+              if (match) {
+                fixer.removeRange([headerStartIndex, headerEndIndex]);
+              }
               return fixer.insertTextBeforeRange(
                 [0, 0],
                 EXPECTED_HEADER + "\n\n"
