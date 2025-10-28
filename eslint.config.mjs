@@ -5,6 +5,9 @@ import { defineConfig } from "eslint/config";
 export default defineConfig(
   ...lichtblickPlugin.configs.base,
   {
+    ignores: ["dist"],
+  },
+  {
     languageOptions: {
       parserOptions: {
         project: "tsconfig.json",
