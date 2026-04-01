@@ -3,20 +3,19 @@ name: CI
 on:
   push:
     branches: main
-    tags: v*
   pull_request:
     branches: "*"
 
 jobs:
-  test:
+  ci:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v6
 
-      - uses: actions/setup-node@v2
+      - uses: actions/setup-node@v6
         with:
-          node-version: 22.x
+          node-version: 24
           registry-url: https://registry.npmjs.org
 
       - uses: actions/cache@v4
@@ -25,14 +24,7 @@ jobs:
           key: v1-${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
           restore-keys: v1-${{ runner.os }}-node-
 
-      - run: npm install
-      - run: npm run tsc
+      - run: npm install --immutable
+      - run: npm run tsc --noEmit
       - run: npm run lint
       - run: npm run test
-
-      # publish version tags
-      - name: npm publish
-        run: npm publish --access public
-        if: ${{ startsWith(github.ref, 'refs/tags/v') }}
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_PUBLISH_TOKEN }}
