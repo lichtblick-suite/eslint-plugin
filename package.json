@@ -5,7 +5,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/Lichtblick-Suite/eslint-plugin.git"
+    "url": "https://github.com/lichtblick-suite/eslint-plugin.git"
   },
   "main": "index.mjs",
   "files": [
