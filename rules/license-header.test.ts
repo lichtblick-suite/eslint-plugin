@@ -54,6 +54,12 @@ const validLichtblickHeaderWithSpacesWithJsdom = `
 ${createHeader(mplLicense, currentYear)}
 `;
 
+const validLichtblickHeaderWithSpacesWithVitestJsdom = `
+/** @vitest-environment jsdom */
+
+${createHeader(mplLicense, currentYear)}
+`;
+
 const invalidLichtblickHeaderEmpty = ``;
 
 const invalidLichtblickHeaderOlder = `
@@ -99,6 +105,10 @@ ruleTester.run("check-license-header", rule, {
     },
     {
       code: validLichtblickHeaderWithSpacesWithJsdom,
+      options: [{ licenseType: "MPL-2.0" }],
+    },
+    {
+      code: validLichtblickHeaderWithSpacesWithVitestJsdom,
       options: [{ licenseType: "MPL-2.0" }],
     },
   ],
