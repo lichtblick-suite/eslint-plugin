@@ -1,7 +1,10 @@
 // A custom eslint rule checking for the existence of an MPL license header,
 // while allowing certain prefixes that cannot be moved below the license header.
 
-const ALLOWED_PREFIX_LINES = ["/** @jest-environment jsdom */"];
+const ALLOWED_PREFIX_LINES = [
+  "/** @jest-environment jsdom */",
+  "/** @vitest-environment jsdom */",
+];
 
 module.exports = {
   meta: {
@@ -13,7 +16,7 @@ module.exports = {
         properties: {
           licenseType: {
             type: "string",
-            descritpion:
+            description:
               "Type of license that should be displayed on the header.",
           },
         },
